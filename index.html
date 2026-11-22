@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08110e">
+<title>LIST · gift lists</title>
+<style>
+:root{--bg:#08110e;--sf:#101a16;--sf2:#16231d;--tx:#e8f1ec;--mut:#8ba397;--ac:#5ee6a0;--ln:#233229;--r:16px;
+font:16px/1.5 ui-rounded,"Avenir Next","Segoe UI",system-ui,sans-serif}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;color:var(--tx);min-height:100vh;background:radial-gradient(900px 500px at 15% -10%,#12392a 0%,transparent 60%),radial-gradient(700px 400px at 100% 0,#0e2a2a 0%,transparent 60%),var(--bg)}
+header{max-width:780px;margin:0 auto;padding:18px 16px 0}
+.logo{font-weight:900;letter-spacing:.35em;color:var(--ac);text-decoration:none;font-size:1.05rem}
+main{max-width:780px;margin:0 auto;padding:12px 16px 120px}
+h1{font-size:clamp(1.8rem,5vw,2.6rem);line-height:1.1;margin:.4em 0 .2em;letter-spacing:-.02em}
+h2{margin:.2em 0 .6em}
+.mut{color:var(--mut)}.c{text-align:center;padding:40px 0}
+.hero{padding:28px 0 8px}.hero p{color:var(--mut);max-width:48ch;margin:0}
+.panel{background:var(--sf);border:1px solid var(--ln);border-radius:var(--r);padding:18px;display:grid;gap:12px;margin:18px 0}
+label{display:grid;gap:5px;font-size:.88rem;color:var(--mut)}
+input,textarea,select{font:inherit;color:var(--tx);background:#0b1511;border:1px solid var(--ln);border-radius:12px;padding:11px 12px;width:100%;outline:none}
+input:focus,textarea:focus{border-color:var(--ac);box-shadow:0 0 0 3px #5ee6a028}
+textarea{resize:vertical;min-height:76px}
+button{font:inherit;cursor:pointer;border:1px solid var(--ln);background:var(--sf2);color:var(--tx);border-radius:12px;padding:9px 14px}
+button:hover{border-color:#3a5646}button:focus-visible,a:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
+button.pri,.fab{background:var(--ac);color:#06130c;border-color:var(--ac);font-weight:700}
+button.danger{color:#ff8a8a}button:disabled{opacity:.5;cursor:wait}
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.mine{display:grid;gap:8px}.mine a{display:block;padding:12px 14px;border:1px solid var(--ln);border-radius:12px;background:var(--sf);color:var(--tx);text-decoration:none}
+.top{display:flex;gap:14px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin:14px 0 18px}
+.top h1{margin-top:0;overflow-wrap:anywhere}.top p{margin:.2em 0;max-width:56ch;overflow-wrap:anywhere}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.items{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.empty{color:var(--mut);text-align:center;padding:50px 10px;border:1px dashed var(--ln);border-radius:var(--r)}
+.fab{position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));border-radius:999px;padding:14px 22px;font-size:1.05rem;box-shadow:0 8px 30px #000a;z-index:5}
+
+/* ---------- cards ---------- */
+.card{position:relative;display:flex;gap:12px;align-items:center;padding:14px 12px 14px 8px;border-radius:var(--r);border:1.5px solid var(--ln);background:var(--sf);overflow:hidden;isolation:isolate}
+.card>*{position:relative;z-index:1}
+.card::before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none}
+.grip{cursor:grab;touch-action:none;user-select:none;color:var(--mut);padding:10px 6px;font-size:1.3rem;line-height:1}
+.sortable-chosen{cursor:grabbing}.sortable-ghost{opacity:.35}
+.bd{flex:1;min-width:0}.tt{font-weight:700;font-size:1.08rem;overflow-wrap:anywhere;display:flex;gap:8px;align-items:center}
+.ds{margin:.3em 0 0;color:#c4d4cb;font-size:.93rem;overflow-wrap:anywhere;white-space:pre-wrap}
+.lk{display:inline-block;margin-top:.45em;font-size:.88rem;color:var(--ac);text-decoration:none;overflow-wrap:anywhere}.lk:hover{text-decoration:underline}
+.ph{width:92px;height:92px;border-radius:12px;object-fit:cover;flex:none;background:#0006;border:1px solid #fff2}
+.ct{display:flex;flex-direction:column;gap:6px}.ct button{padding:5px 9px;font-size:.85rem}
+.ic{display:inline-flex;width:22px;height:22px;flex:none}.ic svg{width:100%;height:100%}
+
+.t1{border-color:#f1f5f2;background:linear-gradient(135deg,#16211c,#1e2b25 50%,#16211c)}
+.t1::before{background:linear-gradient(105deg,transparent 38%,#ffffff1c 48%,#d9e2dd30 52%,transparent 62%);background-size:260% 100%;animation:sh 7s linear infinite}
+.t1 .ic{color:#f1f5f2}
+.t2{border-color:#22d3ee;background:#0b1e24;box-shadow:0 0 18px #22d3ee33,inset 0 0 22px #22d3ee14}
+.t2::before{background:radial-gradient(ellipse 120px 50px at 20% 20%,#22d3ee38,transparent 70%),radial-gradient(ellipse 160px 70px at 80% 80%,#38bdf833,transparent 70%),repeating-linear-gradient(115deg,#ffffff00 0 14px,#7ee7f815 14px 28px);background-size:200% 200%,200% 200%,60px 60px;animation:wv 9s ease-in-out infinite alternate}
+.t2 .ic{color:#67e8f9;filter:drop-shadow(0 0 4px #22d3ee)}
+.t3{border:2px solid transparent;background:linear-gradient(#1d1708,#15110a) padding-box,linear-gradient(135deg,#fff6b8,#f5c542 25%,#a87408 50%,#ffe27a 75%,#c9961a) border-box;box-shadow:0 0 22px #f5c54240,0 0 2px #ffe27a}
+.t3::before{background:linear-gradient(105deg,transparent 35%,#ffe9a066 47%,#fff8d8aa 50%,#ffe9a066 53%,transparent 65%),radial-gradient(circle at 12% 18%,#f5c54230,transparent 40%);background-size:250% 100%,100% 100%;animation:sh 3.6s ease-in-out infinite}
+.t3 .tt{color:#ffe9a6}.t3 .ic{color:#ffd45a;filter:drop-shadow(0 0 5px #f5c542)}.t3 .lk{color:#ffd45a}
+@keyframes sh{from{background-position:130% 0}to{background-position:-130% 0}}
+@keyframes wv{to{background-position:100% 60%,0 30%,60px 0}}
+@media (prefers-reduced-motion:reduce){.card::before{animation:none!important}}
+
+/* ---------- modal ---------- */
+dialog.modal{border:1px solid var(--ln);border-radius:20px;background:var(--sf);color:var(--tx);padding:0;width:min(520px,calc(100vw - 20px));max-height:92vh}
+dialog::backdrop{background:#000b;backdrop-filter:blur(3px)}
+.mc{padding:20px;display:grid;gap:12px}.mc form{display:grid;gap:12px}
+.tps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tp{display:grid;justify-items:center;gap:4px;padding:10px 4px;font-size:.8rem;border-radius:14px}
+.tp.on{border-width:2px;color:var(--tx)}
+.tp[data-t="1"].on{border-color:#f1f5f2;background:#1e2b25}.tp[data-t="2"].on{border-color:#22d3ee;background:#0b2a33}.tp[data-t="3"].on{border-color:#f5c542;background:#2a2108}
+.drop{display:grid;place-items:center;gap:6px;min-height:110px;border:2px dashed #35503f;border-radius:14px;color:var(--mut);text-align:center;padding:12px;cursor:pointer;font-size:.9rem}
+.drop.over{border-color:var(--ac);background:#5ee6a011}.drop.busy{opacity:.5}
+.drop img{width:96px;height:96px;object-fit:cover;border-radius:10px}
+#toast{position:fixed;left:50%;bottom:90px;transform:translate(-50%,20px);background:#e8f1ec;color:#08110e;padding:10px 16px;border-radius:999px;opacity:0;pointer-events:none;transition:.25s;z-index:99;font-weight:600}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:520px){.ph{width:68px;height:68px}.ct{flex-direction:row}.card{flex-wrap:wrap}.bd{flex-basis:calc(100% - 120px)}}
+</style>
+</head>
+<body>
+<header><a class="logo" href="./">LIST</a></header>
+<main id="app"></main>
+<div id="toast" role="status"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js"></script>
+<script>
+'use strict';
+/* ===== 1. CONFIG: paste your Supabase project URL + publishable (anon) key ===== */
+const SB_URL = 'https://YOUR-PROJECT.supabase.co';
+const SB_KEY = 'sb_publishable_gSex7q0Zz2lGjjbet8GgTg_U41jirdY';
+
+/* ===== helpers ===== */
+const $ = (s, r = document) => r.querySelector(s);
+const h = (t, a = {}, ...c) => {
+  const e = document.createElement(t);
+  for (const k in a) {
+    const v = a[k];
+    if (k === 'class') e.className = v;
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v);
+  }
+  e.append(...c.flat().filter(x => x != null && x !== false)); // strings become text nodes: no XSS
+  return e;
+};
+const S = {
+  get: (k, d = null) => { try { return JSON.parse(localStorage.getItem(k)) ?? d } catch { return d } },
+  set: (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch {} },
+  del: k => { try { localStorage.removeItem(k) } catch {} }
+};
+const app = (...n) => $('#app').replaceChildren(...n.flat().filter(Boolean));
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const ERR = { bad_password: 'Wrong password.', rate_limited: 'Too many tries. Wait a few minutes.', list_full: 'This list is full (300 wishes).', invalid: 'Something is missing or too long.', not_found: 'List not found.', network: 'Network problem. Try again.' };
+function toast(m) { const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('on'), 2600) }
+const fail = r => { toast(ERR[r && r.error] || 'Something went wrong.'); return false };
+async function rpc(fn, args) {
+  const headers = { apikey: SB_KEY, 'Content-Type': 'application/json' };
+  if (SB_KEY.startsWith('eyJ')) headers.Authorization = 'Bearer ' + SB_KEY;
+  try {
+    const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, { method: 'POST', headers, body: JSON.stringify(args) });
+    return r.ok ? await r.json() : { error: 'network' };
+  } catch { return { error: 'network' } }
+}
+const safeUrl = u => { try { const x = new URL(u); return /^https?:$/.test(x.protocol) ? x.href : null } catch { return null } };
+function modal(content) {
+  const d = h('dialog', { class: 'modal' }, h('div', { class: 'mc' }, content));
+  d.addEventListener('close', () => d.remove());
+  d.addEventListener('click', e => { if (e.target === d) d.close() });
+  document.body.append(d); d.showModal(); return d;
+}
+
+/* ===== text compression (deflate-raw, only kept when smaller) ===== */
+const b64 = u => { let s = ''; u.forEach(c => s += String.fromCharCode(c)); return btoa(s) };
+const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+async function pack(o) {
+  const s = JSON.stringify(o);
+  try {
+    const z = new Uint8Array(await new Response(new Blob([s]).stream().pipeThrough(new CompressionStream('deflate-raw'))).arrayBuffer());
+    const t = 'z' + b64(z);
+    if (t.length < s.length + 1) return t;
+  } catch {}
+  return 'j' + s;
+}
+async function unpack(s) {
+  try {
+    s = s[0] === 'z' ? await new Response(new Blob([unb64(s.slice(1))]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text() : s.slice(1);
+    const o = JSON.parse(s);
+    return { t: String(o.t || ''), d: String(o.d || ''), l: String(o.l || '') };
+  } catch { return { t: '(unreadable)', d: '', l: '' } }
+}
+const mk = async r => ({ id: r.id, tier: r.tier, img: r.img && /^data:image\//.test(r.img) ? r.img : null, ...await unpack(r.data) });
+
+/* ===== image squisher: biggest picture that fits in 1 KB, quality >= 0.3 ===== */
+const MAXB = 1000;
+const toURL = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b) });
+async function squish(file) {
+  const bmp = await createImageBitmap(file);
+  for (const mime of ['image/webp', 'image/jpeg']) {
+    for (const max of [112, 96, 80, 64, 52, 44, 36, 28, 20]) {
+      const sc = Math.min(1, max / Math.max(bmp.width, bmp.height));
+      const c = document.createElement('canvas');
+      c.width = Math.max(1, Math.round(bmp.width * sc)); c.height = Math.max(1, Math.round(bmp.height * sc));
+      const x = c.getContext('2d'); x.imageSmoothingQuality = 'high';
+      if (mime === 'image/jpeg') { x.fillStyle = '#16231d'; x.fillRect(0, 0, c.width, c.height) }
+      x.drawImage(bmp, 0, 0, c.width, c.height);
+      const enc = q => new Promise(r => c.toBlob(r, mime, q));
+      let best = await enc(.3);
+      if (!best || best.type !== mime) break;     // browser can't encode this format
+      if (best.size > MAXB) continue;             // too big even at q .3 -> shrink dimensions
+      let lo = .3, hi = 1;
+      for (let i = 0; i < 6; i++) { const q = (lo + hi) / 2, t = await enc(q); if (t.size <= MAXB) { best = t; lo = q } else hi = q }
+      return toURL(best);
+    }
+  }
+  throw new Error('too complex');
+}
+
+/* ===== tiers ===== */
+const SVG = {
+  1: '<circle cx="12" cy="12" r="8"/>',
+  2: '<path d="M12 2.5 21 12l-9 9.5L3 12z"/>',
+  3: '<path d="m12 2.5 2.9 6.1 6.6.8-4.9 4.6 1.3 6.6-5.9-3.3-5.9 3.3 1.3-6.6-4.9-4.6 6.6-.8z"/>'
+};
+const TN = { 1: 'Want', 2: 'Really want', 3: 'MAXIMUM WANT' };
+const ico = t => { const s = h('span', { class: 'ic' }); s.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">${SVG[t]}</svg>`; return s };
+
+/* ===== routing ===== */
+function remember(id, title) {
+  const m = S.get('mine', []).filter(x => x.id !== id);
+  m.unshift({ id, title }); S.set('mine', m.slice(0, 30));
+}
+function route() {
+  const id = location.search.startsWith('?=') ? location.search.slice(2).split('&')[0] : null;
+  id && UUID.test(id) ? showList(id) : home();
+}
+
+/* ===== home ===== */
+function home() {
+  const mine = S.get('mine', []);
+  app(
+    h('section', { class: 'hero' }, h('h1', {}, 'Start a gift list'), h('p', {}, 'For Christmas, birthdays, anything. No account. Share the link, and a password keeps the editing yours.')),
+    h('form', { class: 'panel', onsubmit: create },
+      h('label', {}, 'List title', h('input', { name: 't', maxlength: 120, required: true, placeholder: 'Christmas 2026' })),
+      h('label', {}, 'Description (optional)', h('textarea', { name: 'd', maxlength: 600, placeholder: 'Sizes, hints, where to ship…' })),
+      h('label', {}, 'Edit password (4+ characters)', h('input', { name: 'ep', type: 'password', minlength: 4, maxlength: 100, required: true, autocomplete: 'new-password' })),
+      h('label', {}, 'Viewer password (optional, keeps casual visitors out)', h('input', { name: 'vp', maxlength: 100, autocomplete: 'off' })),
+      h('p', { class: 'mut', style: 'margin:0;font-size:.82rem' }, 'Passwords are not strongly protected. Don’t reuse one you care about.'),
+      h('button', { class: 'pri', type: 'submit' }, 'Create list')),
+    mine.length ? h('div', {}, h('h2', {}, 'Your lists'), h('div', { class: 'mine' }, mine.map(x => h('a', { href: '?=' + x.id }, x.title)))) : null
+  );
+}
+async function create(e) {
+  e.preventDefault();
+  const f = e.target, b = $('button', f), title = f.t.value.trim(); b.disabled = true;
+  const r = await rpc('create_list', { p_title: title, p_desc: f.d.value.trim(), p_edit: f.ep.value, p_view: f.vp.value || null });
+  b.disabled = false;
+  if (!r.id) return fail(r);
+  S.set('ep:' + r.id, f.ep.value); if (f.vp.value) S.set('vp:' + r.id, f.vp.value);
+  remember(r.id, title); location.href = '?=' + r.id;
+}
+
+/* ===== list view ===== */
+let L = null, sortable = null;
+async function showList(id) {
+  app(h('p', { class: 'mut c' }, 'Loading…'));
+  L = { id, ep: S.get('ep:' + id), vp: S.get('vp:' + id), items: [], can: false, title: '' };
+  await load();
+}
+async function load(extra) {
+  const r = await rpc('get_list', { p_id: L.id, p_view: L.vp || null, p_edit: L.ep || null, ...extra });
+  if (r.error === 'locked') return lockScreen();
+  if (r.error) { if (!L.title) app(h('p', { class: 'empty' }, ERR[r.error] || 'Could not load.')); return fail(r) }
+  L.title = r.title; L.desc = r.description; L.can = r.can_edit; L.has = r.has_view;
+  L.items = await Promise.all(r.items.map(mk));
+  remember(L.id, L.title); render();
+}
+function lockScreen() {
+  const i = h('input', { type: 'password', required: true, placeholder: 'Password', autocomplete: 'current-password' });
+  app(h('section', { class: 'hero' }, h('h1', {}, 'This list is private'), h('p', {}, 'Enter the viewer password the list owner gave you.')),
+    h('form', { class: 'panel', onsubmit: async e => {
+      e.preventDefault();
+      const r = await rpc('get_list', { p_id: L.id, p_view: i.value, p_edit: null });
+      if (!r.error) { L.vp = i.value; S.set('vp:' + L.id, i.value); return load() }
+      const r2 = await rpc('get_list', { p_id: L.id, p_view: null, p_edit: i.value }); // owner may type edit password
+      if (!r2.error && r2.can_edit) { L.ep = i.value; S.set('ep:' + L.id, i.value); return load() }
+      fail(r.error === 'rate_limited' ? r : { error: 'bad_password' });
+    } }, i, h('button', { class: 'pri' }, 'Open list')));
+}
+function render() {
+  sortable && sortable.destroy(); sortable = null;
+  const ul = h('ul', { class: 'items' }, L.items.map(card));
+  app(
+    h('div', { class: 'top' },
+      h('div', {}, h('h1', {}, L.title), L.desc && h('p', { class: 'mut' }, L.desc)),
+      h('div', { class: 'acts' },
+        h('button', { onclick: share }, 'Share link'),
+        L.can ? [h('button', { onclick: sortTier }, 'Sort by want'), h('button', { onclick: settings }, 'Settings'), h('button', { onclick: lock }, 'Lock')]
+              : h('button', { onclick: unlock }, 'Edit'))),
+    L.items.length ? ul : h('p', { class: 'empty' }, L.can ? 'Nothing here yet. Add your first wish.' : 'No wishes added yet.'),
+    L.can && h('button', { class: 'fab', onclick: () => editor() }, '+ Add wish'));
+  if (L.can && L.items.length) sortable = Sortable.create(ul, {
+    handle: '.grip', animation: 150, ghostClass: 'sortable-ghost',
+    onEnd: () => { const m = new Map(L.items.map(i => [i.id, i])); L.items = [...ul.children].map(e => m.get(e.dataset.id)); saveOrder() }
+  });
+}
+function card(it) {
+  const u = safeUrl(it.l);
+  return h('li', { class: 'card t' + it.tier, 'data-id': it.id },
+    L.can && h('span', { class: 'grip', title: 'Drag to reorder', 'aria-label': 'Drag to reorder' }, '⠿'),
+    h('div', { class: 'bd' },
+      h('div', { class: 'tt', title: TN[it.tier] }, ico(it.tier), it.t),
+      it.d && h('p', { class: 'ds' }, it.d),
+      u && h('a', { class: 'lk', href: u, target: '_blank', rel: 'noopener noreferrer nofollow' }, new URL(u).hostname.replace(/^www\./, ''))),
+    it.img && h('img', { class: 'ph', src: it.img, alt: '', loading: 'lazy' }),
+    L.can && h('div', { class: 'ct' },
+      h('button', { onclick: () => editor(it) }, 'Edit'),
+      h('button', { class: 'danger', onclick: () => del(it) }, 'Remove')));
+}
+let rt;
+function saveOrder() {
+  clearTimeout(rt);
+  rt = setTimeout(async () => { const r = await rpc('reorder_items', { p_list: L.id, p_edit: L.ep, p_ids: L.items.map(i => i.id) }); if (r.error) fail(r) }, 500);
+}
+function sortTier() { L.items.sort((a, b) => b.tier - a.tier); render(); saveOrder() } // stable sort keeps manual order within a tier
+function del(it) {
+  if (!confirm('Remove this wish?')) return;
+  L.items = L.items.filter(x => x !== it); render();
+  rpc('delete_item', { p_list: L.id, p_edit: L.ep, p_id: it.id }).then(r => r.error && fail(r));
+}
+function share() {
+  const url = location.origin + location.pathname + '?=' + L.id;
+  (navigator.clipboard ? navigator.clipboard.writeText(url).then(() => toast(L.has ? 'Link copied. Viewers also need the viewer password.' : 'Link copied')) : Promise.reject())
+    .catch(() => prompt('Copy this link', url));
+}
+function lock() { L.ep = null; S.del('ep:' + L.id); L.can = false; render(); toast('Editing locked on this device') }
+function unlock() {
+  const i = h('input', { type: 'password', required: true, placeholder: 'Edit password', autocomplete: 'current-password' });
+  const d = modal([h('h2', {}, 'Unlock editing'), h('form', { onsubmit: async e => {
+    e.preventDefault();
+    const old = L.ep; L.ep = i.value; await load();
+    if (L.can) { S.set('ep:' + L.id, L.ep); d.close(); toast('Unlocked. Saved on this device.') } else { L.ep = old; toast('Wrong password.') }
+  } }, i, h('button', { class: 'pri' }, 'Unlock'))]);
+  i.focus();
+}
+
+/* ===== wish editor ===== */
+function editor(it) {
+  const e = it || { tier: 1, t: '', d: '', l: '', img: null };
+  let tier = e.tier, img = e.img;
+  const ti = h('input', { maxlength: 120, required: true, placeholder: 'What do you want?', value: e.t });
+  const de = h('textarea', { maxlength: 400, placeholder: 'Size, color, model…' }, e.d);
+  const li = h('input', { maxlength: 300, placeholder: 'https://…', value: e.l, inputmode: 'url' });
+  const tps = [1, 2, 3].map(t => h('button', { type: 'button', class: 'tp' + (t === tier ? ' on' : ''), 'data-t': t, onclick: () => { tier = t; tps.forEach(b => b.classList.toggle('on', +b.dataset.t === t)) } }, ico(t), TN[t]));
+  const file = h('input', { type: 'file', accept: 'image/*', hidden: true, onchange: () => take(file.files[0]) });
+  const drop = h('div', { class: 'drop', tabindex: 0, role: 'button' });
+  const draw = () => drop.replaceChildren(...(img ? [h('img', { src: img, alt: '' }), h('span', {}, `${Math.round((img.length - img.indexOf(',') - 1) * .75)} bytes · tap to replace`)] : [h('span', {}, 'Drop, paste, or tap to add an image'), h('span', {}, 'Shrunk to ~1 KB automatically')]));
+  const take = async f => {
+    if (!f || !f.type.startsWith('image/')) return;
+    drop.classList.add('busy');
+    try { img = await squish(f); draw() } catch { toast('Could not shrink that image') }
+    drop.classList.remove('busy');
+  };
+  drop.onclick = () => file.click();
+  drop.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); file.click() } };
+  drop.ondragover = ev => { ev.preventDefault(); drop.classList.add('over') };
+  drop.ondragleave = () => drop.classList.remove('over');
+  drop.ondrop = ev => { ev.preventDefault(); drop.classList.remove('over'); take(ev.dataTransfer.files[0]) };
+  draw();
+  const onPaste = ev => { const f = [...(ev.clipboardData ? ev.clipboardData.files : [])].find(x => x.type.startsWith('image/')); if (f) { ev.preventDefault(); take(f) } };
+  document.addEventListener('paste', onPaste);
+  const sb = h('button', { class: 'pri', type: 'submit' }, 'Save wish');
+  const d = modal([h('h2', {}, it ? 'Edit wish' : 'New wish'), h('form', { onsubmit: async ev => {
+    ev.preventDefault();
+    const t = ti.value.trim(); if (!t) return ti.focus();
+    let l = li.value.trim();
+    if (l) { if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(l)) l = 'https://' + l; if (!safeUrl(l)) return toast('That link looks invalid') }
+    const o = { t, d: de.value.trim(), l }; sb.disabled = true;
+    const r = await rpc('save_item', { p_list: L.id, p_edit: L.ep, p_id: it ? it.id : null, p_tier: tier, p_data: await pack(o), p_img: img });
+    sb.disabled = false;
+    if (!r.id) { if (r.error === 'bad_password') { L.can = false; S.del('ep:' + L.id); d.close(); render() } return fail(r) }
+    if (it) Object.assign(it, { tier, img }, o); else L.items.push({ id: r.id, tier, img, ...o });
+    d.close(); render();
+  } },
+    h('label', {}, 'Title', ti),
+    h('div', {}, h('div', { class: 'mut', style: 'font-size:.88rem;margin-bottom:6px' }, 'How much do you want it?'), h('div', { class: 'tps' }, tps)),
+    h('label', {}, 'Description (optional)', de),
+    h('label', {}, 'Link (optional)', li),
+    h('div', {}, drop, file, h('div', { style: 'margin-top:6px' }, h('button', { type: 'button', onclick: () => { img = null; draw() } }, 'Remove image'))),
+    h('div', { class: 'row' }, sb, h('button', { type: 'button', onclick: () => d.close() }, 'Cancel')))]);
+  d.addEventListener('close', () => document.removeEventListener('paste', onPaste));
+  if (!it) ti.focus();
+}
+
+/* ===== list settings ===== */
+function settings() {
+  const ti = h('input', { maxlength: 120, required: true, value: L.title });
+  const de = h('textarea', { maxlength: 600 }, L.desc || '');
+  const vp = h('input', { maxlength: 100, placeholder: L.has ? 'Blank keeps the current password' : 'Optional', autocomplete: 'off' });
+  const rm = h('input', { type: 'checkbox', style: 'width:auto' });
+  const d = modal([h('h2', {}, 'List settings'), h('form', { onsubmit: async ev => {
+    ev.preventDefault();
+    const set = !!(vp.value || rm.checked);
+    const r = await rpc('update_list', { p_id: L.id, p_edit: L.ep, p_title: ti.value.trim(), p_desc: de.value.trim(), p_view: vp.value || null, p_set_view: set });
+    if (r.error) return fail(r);
+    L.title = ti.value.trim(); L.desc = de.value.trim();
+    if (set) { L.has = !!vp.value; L.vp = vp.value || null; vp.value ? S.set('vp:' + L.id, vp.value) : S.del('vp:' + L.id) }
+    d.close(); render();
+  } },
+    h('label', {}, 'Title', ti), h('label', {}, 'Description', de),
+    h('label', {}, 'Viewer password', vp),
+    L.has && h('label', { class: 'row', style: 'display:flex;align-items:center;gap:8px' }, rm, 'Remove viewer password'),
+    h('div', { class: 'row' }, h('button', { class: 'pri' }, 'Save changes'),
+      h('button', { type: 'button', class: 'danger', onclick: async () => {
+        if (!confirm('Delete this whole list forever?')) return;
+        const r = await rpc('delete_list', { p_id: L.id, p_edit: L.ep });
+        if (r.error) return fail(r);
+        S.set('mine', S.get('mine', []).filter(x => x.id !== L.id)); S.del('ep:' + L.id); location.href = './';
+      } }, 'Delete list')))]);
+}
+
+route();
+</script>
+</body>
+</html>
